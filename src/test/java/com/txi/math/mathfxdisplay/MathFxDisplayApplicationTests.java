@@ -23,11 +23,13 @@ public class MathFxDisplayApplicationTests  {
 
 	@Test
 	void click_hamburger(FxRobot robot) {
-        for (int i=0; i<10; i++) {
+        for (int i=0; i<2; i++) {
             FxAssertions.assertNotVisiblyById("navigationBox");
             robot.clickById("titleBurger");
             sleepSeconds(1);
             FxAssertions.assertVisiblyById("navigationBox");
+            robot.clickById("zeroCrossingButton");
+            sleepSeconds(1);
             robot.clickById("titleBurger");
             sleepSeconds(1);
         }

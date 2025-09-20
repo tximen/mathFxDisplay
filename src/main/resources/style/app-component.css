@@ -19,5 +19,7 @@
 }
 
 .navigation-button {
-    -fx-background-color: #f00;
+   -fx-background-color: transparent;
+   -fx-font-size: 1.2em;
+   -fx-text-fill: #283BA8;
 }

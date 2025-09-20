@@ -29,4 +29,9 @@ public class MainView implements  Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.navigationBox.visibleProperty().bind(this.titleBurger.selectedProperty());
     }
+
+    @FXML
+    public void openFunctionZeroCrossing() {
+        System.out.println("zerocrossing");
+    }
 }

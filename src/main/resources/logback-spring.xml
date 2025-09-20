@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d{HH:mm:ss} test %-5level %logger{36}\(%line\) - %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+
+    <logger name="jakarta.mail" level="ERROR" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <logger name="org.hibernate" level="ERROR" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <logger name="org.springframework" level="ERROR" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+
+    </root>
+
+</configuration>

@@ -1,0 +1,23 @@
+
+/*******************************************************************************
+*                                                                              *
+* JFX Hamburger Icon                                                           *
+*                                                                              *
+*******************************************************************************/
+
+.jfx-hamburger {
+    -fx-padding: 10.0;
+    -fx-spacing: 4px;
+    -fx-cursor: hand;
+}
+
+.jfx-hamburger StackPane {
+    -fx-pref-width: 20px;
+    -fx-pref-height: 2.5px;
+    -fx-background-color: #283BA8;
+    -fx-background-radius: 5px;
+}
+
+.navigation-button {
+    -fx-background-color: #f00;
+}

@@ -15,15 +15,14 @@
 <?import com.jfonux.controls.JFXRippler?>
 <?import com.jfonux.controls.JFXHamburger?>
 
+<?import javafx.scene.layout.StackPane?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.txi.math.mathfxdisplay.main.MainView">
     <top>
         <VBox spacing="20">
             <JFXToolbar>
                 <leftItems>
                     <JFXRippler maskType="CIRCLE" style="-fx-ripple-color:WHITE;">
-
-                            <JFXHamburger fx:id="titleBurger" transition="BasicClose" />
-
+                       <JFXHamburger fx:id="titleBurger" transition="BasicClose" />
                     </JFXRippler>
                     <Label text="Mathematik Algorithmen">
                         <HBox.margin>
@@ -32,7 +31,6 @@
                         <font>
                             <Font size="18.0" />
                         </font>
-
                     </Label>
                 </leftItems>
                 <VBox.margin>
@@ -40,7 +38,6 @@
                 </VBox.margin>
             </JFXToolbar>
         </VBox>
-
     </top>
     <left>
         <VBox fx:id="navigationBox" BorderPane.alignment="CENTER">
@@ -49,7 +46,10 @@
                     <Insets top="10" />
                 </VBox.margin>
             </Button>
-
         </VBox>
     </left>
+    <center>
+        <StackPane fx:id="displayStackContent" />
+
+    </center>
 </BorderPane>

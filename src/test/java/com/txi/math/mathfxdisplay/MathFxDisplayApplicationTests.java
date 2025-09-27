@@ -12,14 +12,12 @@ import com.jfx4test.framework.junit.ApplicationTest;
 import static com.jfx4test.framework.util.WaitForAsyncUtils.sleepSeconds;
 
 @SpringBootTest
-@ApplicationTest(value="fxml/mainView.fxml", stylesheet = "style/app-component.css", delayInSeconds = 5)
+@ApplicationTest(value="fxml/mainView.fxml", stylesheet = "style/app-component.css")
 public class MathFxDisplayApplicationTests  {
-
 
     @Autowired
     @FxmlController
     private MainView controller;
-
 
 	@Test
 	void click_hamburger(FxRobot robot) {

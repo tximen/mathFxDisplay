@@ -3,6 +3,8 @@ package com.txi.math.mathfxdisplay.main;
 import com.jfonux.controls.JFXHamburger;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.springframework.stereotype.Component;
 
@@ -14,9 +16,11 @@ public class MainView implements  Initializable {
 
     private final MainModel viewModel;
 
+
     @FXML
     private VBox navigationBox;
-
+    @FXML
+    private StackPane displayStackContent;
     @FXML
     private JFXHamburger titleBurger;
 
@@ -32,6 +36,8 @@ public class MainView implements  Initializable {
 
     @FXML
     public void openFunctionZeroCrossing() {
+        displayStackContent.getChildren().clear();
+        displayStackContent.getChildren().add(new Label("Null Stellen"));
         System.out.println("zerocrossing");
     }
 }

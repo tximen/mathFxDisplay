@@ -1,0 +1,16 @@
+grammar Polynomial;
+
+// Startregel: Ein mathematischer Ausdruck (z.B. ein Polynom)
+expression : term ( '+' term | '-' term )* ; // Unterstützung für Addition und Subtraktion von Termen
+
+term       : factor ( '^' NUMBER )? ;       // Ein Term: Faktor und optional eine Potenz
+
+factor     : NUMBER VARIABLE                // Faktor mit Koeffizient und Variable (z.B. "2x")
+           | NUMBER                         // Nur eine Zahl
+           | VARIABLE                       // Nur eine Variable (z.B. "x")
+           | '(' expression ')' ;           // Klammer-Ausdrücke (z.B. "(x + 1)^2")
+
+VARIABLE   : [a-zA-Z] ;                     // Variablen (z.B. "x", "y", etc.)
+NUMBER     : [0-9]+ ;                       // Ganze Zahlen
+
+WHITESPACE : [ \t\r\n] -> skip ;            // Leerzeichen ignorieren

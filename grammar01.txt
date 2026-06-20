@@ -1,0 +1,60 @@
+grammar Expression;
+
+// Parser-Regeln
+expression: term ( (PLUS | MINUS) term )* ;
+
+term: factor ( (MULT | DIV) factor )* ;
+
+factor:
+    (PLUS | MINUS)* power
+  | LPAREN expression RPAREN
+  ;
+
+power: func (POWER power)? ;
+
+func:
+    atom
+  | funcName LPAREN expression RPAREN
+  ;
+
+atom:
+    NUMBER
+  | VARIABLE
+  | PI
+  | E
+  ;
+
+funcName:
+    SIN
+  | COS
+  | EXP
+  | LOG
+  | TAN
+  | SQRT
+  ;
+
+// Lexer-Regeln
+PLUS: '+' ;
+MINUS: '-' ;
+MULT: '*' ;
+DIV: '/' ;
+POWER: '^' ;
+LPAREN: '(' ;
+RPAREN: ')' ;
+
+SIN: 'sin' | 'SIN' ;
+COS: 'cos' | 'COS' ;
+EXP: 'exp' | 'EXP' ;
+LOG: 'log' | 'LOG' ;
+TAN: 'tan' | 'TAN' ;
+SQRT: 'sqrt' | 'SQRT' ;
+
+PI: 'pi' | 'PI' ;
+E: 'e' | 'E' ;
+
+VARIABLE: 'x' | 'y' | 'z' ;
+NUMBER: DIGIT+ ( '.' DIGIT+ )? ;
+
+fragment DIGIT: [0-9] ;
+
+WS: [ \t\r\n]+ -> skip ;

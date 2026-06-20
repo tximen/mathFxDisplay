@@ -5,19 +5,19 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>4.0.0-M3</version>
+		<version>4.1.0</version>
 		<relativePath/>
 	</parent>
 	<groupId>com.txi.math</groupId>
-	<artifactId>mathfxdisplay</artifactId>
+	<artifactId>MathfxDisplay</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Math Fx Display</name>
 	<description>Display Math </description>
 	<url/>
 
 	<properties>
-		<java.version>25</java.version>
-        <javafx.version>25</javafx.version>
+		<java.version>27</java.version>
+        <javafx.version>27-ea+20</javafx.version>
 	</properties>
 
 	<dependencies>

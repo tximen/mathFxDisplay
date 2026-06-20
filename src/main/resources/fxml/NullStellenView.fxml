@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.txi.math.mathfxdisplay.zerocrossing.NullStellenView">
+<GridPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.txi.math.mathfxdisplay.zerocrossing.NullStellenView">
   <columnConstraints>
    <!-- 00 --> <ColumnConstraints maxWidth="5.0" minWidth="5.0" prefWidth="5.0" />
    <!-- 01 --> <ColumnConstraints maxWidth="60.0" minWidth="60.0" prefWidth="60.0" />
@@ -24,10 +24,8 @@
    <!-- 08 --> <ColumnConstraints maxWidth="50.0" minWidth="50.0" prefWidth="50.0" />
    <!-- 09 --> <ColumnConstraints maxWidth="5.0" minWidth="5.0" prefWidth="5.0" />
    <!-- 10 --> <ColumnConstraints maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
-   <!-- 11 -->  <ColumnConstraints hgrow="SOMETIMES" maxWidth="590.0" minWidth="10.0" prefWidth="571.0" />
+   <!-- 11 --> <ColumnConstraints hgrow="SOMETIMES" maxWidth="99999999" minWidth="10.0"  />
    <!-- 12 --> <ColumnConstraints maxWidth="5.0" minWidth="5.0" prefWidth="5.0" />
-      <ColumnConstraints />
-
   </columnConstraints>
   <rowConstraints>
     <!-- 00 --> <RowConstraints maxHeight="5" minHeight="5" prefHeight="5" />

@@ -1,20 +1,24 @@
 package com.txi.math.mathfxdisplay.function;
 
+import javafx.beans.value.ObservableValue;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class FunctionPlotter extends Canvas {
+    private static final Logger LOGGER = LoggerFactory.getLogger(FunctionPlotter.class);
 
+    private static final double HORIZONTAL_MARGIN = 50d;
+    private static final double VERTICAL_MARGIN   = 50d;
 
-    private double xMin = -10;
-    private double xMax = 10;
-    private double yMin = -10;
-    private double yMax = 10;
+    private PlotRange plotRange;
 
     // Darstellungsoptionen
-    private Color gridColor = Color.LIGHTGRAY;
+ //   private Color gridColor = Color.LIGHTGRAY;
+    private Color gridColor = Color.BLACK;
     private Color axisColor = Color.BLACK;
     private Color functionColor = Color.BLUE;
     private double functionStrokeWidth = 2.5;
@@ -22,18 +26,24 @@ public class FunctionPlotter extends Canvas {
     private java.util.function.DoubleUnaryOperator function;
 
     public FunctionPlotter() {
-        this.setWidth(600);
-        this.setHeight(400);
+        this.plotRange =  new PlotRange(VERTICAL_MARGIN, HORIZONTAL_MARGIN, -10, 10, -2, 2);
+     //   this.setWidth(600);
+     //   this.setHeight(400);
 
         // Standardfunktion: f(x) = sin(x)
         this.function = Math::sin;
 
-        // Neuzeichnen bei Größenänderung
-        widthProperty().addListener(evt -> draw());
-        heightProperty().addListener(evt -> draw());
+        widthProperty().addListener(this::widthOrHeightChanged);
+        heightProperty().addListener(this::widthOrHeightChanged);
+    }
 
+
+
+    private void widthOrHeightChanged(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+        LOGGER.info("widthChanged: old {}  new {}", oldValue, newValue);
         draw();
     }
+
 
     // Setter für die Funktion (z.B. x -> x*x für x²)
     public void setFunction(java.util.function.DoubleUnaryOperator func) {
@@ -41,124 +51,119 @@ public class FunctionPlotter extends Canvas {
         draw();
     }
 
-    // Bereich setzen und neu zeichnen
-    public void setRange(double xMin, double xMax, double yMin, double yMax) {
-        this.xMin = xMin;
-        this.xMax = xMax;
-        this.yMin = yMin;
-        this.yMax = yMax;
-        draw();
-    }
+
 
     // Hauptzeichnen-Routine
-    private void draw() {
-        GraphicsContext gc = getGraphicsContext2D();
-        double width = getWidth();
-        double height = getHeight();
+    public void draw() {
+        GraphicsContext graphContext = getGraphicsContext2D();
+        // clear convas
+        graphContext.clearRect(0, 0, getWidth(), getHeight());
 
-System.err.println("width: " + width + " height: " + height);
-        // Canvas löschen
-        gc.clearRect(0, 0, width, height);
-
-        // Koordinatensystem-Transformation berechnen
-        // Pixel-Koordinaten: (0,0) ist oben-links
-        // Mathematisch: (xMin, yMax) ist oben-links, (xMax, yMin) ist unten-rechts
-        double scaleX = width / (xMax - xMin);
-        double scaleY = height / (yMin - yMax); // Negativ wegen invertierter Y-Achse
-
-        // Pixel-Koordinate zu Mathematik-Koordinate
-        java.util.function.DoubleUnaryOperator toMathX = (px) -> xMin + (px / scaleX);
-        java.util.function.DoubleUnaryOperator toMathY = (py) -> yMax + (py / scaleY); // Invertiert
-
-        // --- 1. Gitter zeichnen ---
-        drawGrid(gc, scaleX, scaleY);
-
-        // --- 2. Achsen zeichnen ---
-        drawAxes(gc, scaleX, scaleY);
-
-        // --- 3. Funktion zeichnen ---
-        drawFunction(gc, scaleX, scaleY);
+        drawGrid(graphContext);
+        drawAxis(graphContext);
+        drawFunction(graphContext);
     }
 
 
-    private void drawGrid(GraphicsContext gc, double scaleX, double scaleY) {
-        double width = getWidth();
-        double height = getHeight();
-
-        gc.setStroke(gridColor);
-        gc.setLineWidth(0.5);
-
-        // Vertikale Gitterlinien (ganzzahlige x-Werte)
-        for (int x = (int) Math.ceil(xMin); x <= (int) Math.floor(xMax); x++) {
-            if (x == 0) continue; // Achse wird separat gezeichnet
-            double pixelX = (x - xMin) * scaleX;
-            System.out.println("stroke " + pixelX);
-            gc.strokeLine(pixelX, 0, pixelX, height);
-        }
-
-        // Horizontale Gitterlinien (ganzzahlige y-Werte)
-        for (int y = (int) Math.ceil(yMin); y <= (int) Math.floor(yMax); y++) {
-            if (y == 0) continue;
-            double pixelY = (yMax - y) * scaleY; // Invertiert
-            gc.strokeLine(0, pixelY, width, pixelY);
-        }
+    private void drawGrid(GraphicsContext graphContext ) {
+        graphContext.setStroke(gridColor);
+        graphContext.setLineWidth(0.5);
+        drawHorizontalY(graphContext);
+        drawVerticalX(graphContext);
     }
 
-    private void drawAxes(GraphicsContext gc, double scaleX, double scaleY) {
-        double width = getWidth();
-        double height = getHeight();
-
-        gc.setStroke(axisColor);
-        gc.setLineWidth(1.5);
-
-        // X-Achse (wenn sichtbar)
-        if (yMin <= 0 && yMax >= 0) {
-            double yZero = (yMax - 0) * scaleY;
-            gc.strokeLine(0, yZero, width, yZero);
-
-            // Pfeilspitze für X-Achse
-            gc.strokeLine(width - 10, yZero - 5, width, yZero);
-            gc.strokeLine(width - 10, yZero + 5, width, yZero);
-        }
-
-        // Y-Achse (wenn sichtbar)
-        if (xMin <= 0 && xMax >= 0) {
-            double xZero = (0 - xMin) * scaleX;
-            gc.strokeLine(xZero, 0, xZero, height);
-
-            // Pfeilspitze für Y-Achse
-            gc.strokeLine(xZero - 5, 10, xZero, 0);
-            gc.strokeLine(xZero + 5, 10, xZero, 0);
-        }
-
-        // Achsenbeschriftungen (vereinfacht)
-        gc.setFill(axisColor);
-        gc.setLineWidth(1);
-        for (int x = (int) Math.ceil(xMin); x <= (int) Math.floor(xMax); x++) {
-            if (x == 0) continue;
-            double pixelX = (x - xMin) * scaleX;
-            double pixelY = (yMax - 0) * scaleY;
-            if (yMin <= 0 && yMax >= 0) {
-                gc.fillText(String.valueOf(x), pixelX - 10, pixelY + 20);
-            }
-        }
-        for (int y = (int) Math.ceil(yMin); y <= (int) Math.floor(yMax); y++) {
-            if (y == 0) continue;
-            double pixelX = (0 - xMin) * scaleX;
-            double pixelY = (yMax - y) * scaleY;
-            if (xMin <= 0 && xMax >= 0) {
-                gc.fillText(String.valueOf(y), pixelX + 10, pixelY + 5);
+    private void drawVerticalX(GraphicsContext graphContext) {
+        double scaleX = this.plotRange.scaleX(getWidth());
+        int startX = this.plotRange.startX();
+        int endX = this.plotRange.endX();
+        double lineEnd = this.plotRange.lineEndX(getHeight());
+        for (int x = startX; x <= endX; x++) {
+            if (x != 0) {
+                double pixelX = this.plotRange.pixelX(scaleX, x);
+                LOGGER.debug("vertical x: {} pixelX: {} lineEnd {}", x, pixelX, lineEnd);
+                graphContext.strokeLine(pixelX, HORIZONTAL_MARGIN, pixelX, lineEnd);
             }
         }
     }
 
-    private void drawFunction(GraphicsContext gc, double scaleX, double scaleY) {
-        double width = getWidth();
-        double height = getHeight();
+    /**
+     * draw the hoirzontal lines
+     * @param graphContext graphic context
+     */
+    private void drawHorizontalY(GraphicsContext graphContext) {
+        double scaleY = this.plotRange.scaleY(getHeight());
+        int startY = this.plotRange.startY();
+        int endY =   this.plotRange.endY();
+        double lineEnd =   this.plotRange.lineEndY(getWidth());
+        for (int y = startY; y <= endY; y++) {
+            if (y != 0) {
+                double pixelY = this.plotRange.pixelY(scaleY, y);
+                LOGGER.debug("horizontal y: {} pixelY: {} lineEnd {}", y, pixelY,  lineEnd);
+                graphContext.strokeLine(VERTICAL_MARGIN, pixelY, lineEnd, pixelY);
+            }
+        }
+    }
 
-        gc.setStroke(functionColor);
-        gc.setLineWidth(functionStrokeWidth);
+    private void drawAxis(GraphicsContext graphContext) {
+        if (this.plotRange.isAxisVisible()) {
+            graphContext.setStroke(axisColor);
+            graphContext.setLineWidth(1.5);
+            drawHorizontalAxis(graphContext);
+            drawVerticalAxis(graphContext);
+        }
+    }
 
+    private void drawHorizontalAxis(GraphicsContext graphContext) {
+        if (this.plotRange.isHorizontalAxisVisible()) {
+            double scaleX = this.plotRange.scaleX(getWidth());
+            double xZero = this.plotRange.pixelX(scaleX, 0);
+            double lineEnd = this.plotRange.lineEndX(getHeight());
+            graphContext.strokeLine(xZero, HORIZONTAL_MARGIN, xZero, lineEnd);
+            graphContext.strokeLine(xZero - 5, HORIZONTAL_MARGIN+10, xZero, HORIZONTAL_MARGIN);
+            graphContext.strokeLine(xZero + 5, HORIZONTAL_MARGIN+10, xZero, HORIZONTAL_MARGIN);
+        }
+    }
+
+    private void drawVerticalAxis(GraphicsContext graphContext) {
+        if (this.plotRange.isVerticalAxisVisible()) {
+            double scaleY = this.plotRange.scaleY(getHeight());
+            double yZero = this.plotRange.pixelY(scaleY, 0);
+            double lineEnd = this.plotRange.lineEndY(getWidth());
+            graphContext.strokeLine(VERTICAL_MARGIN, yZero, lineEnd, yZero);
+            graphContext.strokeLine(lineEnd - 10, yZero - 5, lineEnd, yZero);
+            graphContext.strokeLine(lineEnd - 10, yZero + 5, lineEnd, yZero);
+        }
+    }
+
+
+
+    private void drawFunction(GraphicsContext graphContext) {
+        double scaleX = this.plotRange.scaleX(getWidth());
+        double scaleY = this.plotRange.scaleY(getHeight());
+        double stepSize = this.plotRange.stepSize();
+
+        graphContext.setStroke(functionColor);
+        graphContext.setLineWidth(functionStrokeWidth);
+
+        double previousX = Double.NaN;
+        double previousY = Double.NaN;
+        for (double mathX = this.plotRange.xMin(); mathX <= this.plotRange.xMax(); mathX +=stepSize) {
+            try {
+                double pixelX = this.plotRange.pixelX(scaleX, mathX);
+                double fctY = function.applyAsDouble(mathX);
+                double pixelY = this.plotRange.pixelY(scaleY, fctY);
+                if (!Double.isNaN(previousX) && !Double.isNaN(previousY)) {
+                    graphContext.strokeLine(previousX, previousY, pixelX, pixelY);
+                }
+                previousX = pixelX;
+                previousY = pixelY;
+            } catch (Exception exception) {
+                previousX = Double.NaN;
+                previousY = Double.NaN;
+                exception.printStackTrace();
+            }
+        }
+        /*
         // Kurve Punkt für Punkt zeichnen
         double previousX = Double.NaN;
         double previousY = Double.NaN;
@@ -194,5 +199,9 @@ System.err.println("width: " + width + " height: " + height);
             previousX = pixelX;
             previousY = pixelY;
         }
+
+         */
     }
+
+
 }

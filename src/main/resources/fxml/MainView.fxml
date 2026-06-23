@@ -46,6 +46,11 @@
                     <Insets top="10" />
                 </VBox.margin>
             </Button>
+            <Button fx:id="sinusButton" mnemonicParsing="false" text="Sinus" onAction="#openSinus" styleClass="navigation-button">
+                <VBox.margin>
+                    <Insets top="10" />
+                </VBox.margin>
+            </Button>
         </VBox>
     </left>
     <center>

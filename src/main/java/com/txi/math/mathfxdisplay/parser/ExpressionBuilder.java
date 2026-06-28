@@ -30,6 +30,26 @@ public class ExpressionBuilder {
         this.stack = new ArrayDeque<>();
     }
 
+    public Expression expression() {
+        if (this.stack.isEmpty()) {
+            throw new IllegalStateException("stack is empty");
+        } else {
+            return this.stack.pop();
+        }
+
+    }
+
+    public void validateEndStack() {
+        if (stack.isEmpty()) {
+            throw new ParseException("empty expression stack");
+        }
+        if (stack.size() == 1) {
+            LOGGER.info("top: {}", stack.peek());
+        } else {
+            throw new ParseException("more than one expression  amount : " + stack.size());
+        }
+    }
+
     public void processSymbol(String otherSymbol) {
         Expression expr = createSymbolOrIdentity(otherSymbol);
         LOGGER.info("symbol push {}", expr);
@@ -51,14 +71,15 @@ public class ExpressionBuilder {
     }
 
     private Expression createImaginaryOrIdentity() {
-        if (this.stack.peek() instanceof NumberExpression entry) {
+        if (this.stack.peek() instanceof NumberExpression(double value)) {
             var top = this.stack.pop();
             LOGGER.info("pop {}", top);
-            return new ComplexNumber(Complex.ofCartesian(0d, entry.value()));
+            return new ComplexNumber(Complex.ofCartesian(0d, value));
         } else  {
             return new ComplexNumber(Complex.I);
         }
     }
+
     public void processNumber(TerminalNode numberNode) {
         if (numberNode != null) {
             var expression = new NumberExpression(Double.parseDouble(numberNode.getSymbol().getText()));
@@ -69,17 +90,19 @@ public class ExpressionBuilder {
         }
     }
 
-    public void processProduct(List<TerminalNode> operatorNodes) {
+    public void processSumOrProduct(List<TerminalNode> operatorNodes) {
         int size = operatorNodes.size();
-        List<Expression> expressions = createExpressions(size);
-        Expression firstExpr = this.stack.pop();
-        LOGGER.info("pop {}", firstExpr);
-        for (int i = 0; i < size; i++) {
-            var secondExpr = expressions.get(i);
-            firstExpr = processMulOrDiv(operatorNodes.get(i), firstExpr, secondExpr);
+        if (size > 0) {
+            List<Expression> expressions = createExpressions(size);
+            Expression firstExpr = this.stack.pop();
+            LOGGER.info("pop {}", firstExpr);
+            for (int i = 0; i < size; i++) {
+                var secondExpr = expressions.get(i);
+                firstExpr = processAddorSuborMulOrDiv(operatorNodes.get(i), firstExpr, secondExpr);
+            }
+            LOGGER.info("sum or product push {}", firstExpr);
+            this.stack.push(firstExpr);
         }
-        LOGGER.info("product push {}", firstExpr);
-        this.stack.push(firstExpr);
     }
 
     private @NonNull List<Expression> createExpressions(int size) {
@@ -92,9 +115,10 @@ public class ExpressionBuilder {
         return expressions.reversed();
     }
 
-    private Expression processMulOrDiv(TerminalNode node, Expression first,  Expression second) {
+    private Expression processAddorSuborMulOrDiv(TerminalNode node, Expression first,  Expression second) {
         LOGGER.debug("operator {} first {} second {}", node.getSymbol().getText(), first, second);
         return switch (node.getText()) {
+            case "+" -> processSum(first,  second);
             case "*" -> processMultiply(first,  second);
             case "/" -> processDivide(first,  second);
             default ->  throw new ParseException("unrecognized operator " + node.getText());
@@ -167,5 +191,40 @@ public class ExpressionBuilder {
 
     private DevideExpression processAnyDivide(Expression firstExpr, Expression secondExpr) {
         return new DevideExpression(firstExpr, secondExpr);
+    }
+
+
+    private Expression processSum(Expression first,  Expression second) {
+        return switch (second) {
+            case NumberExpression secondExpr -> processSumNumber(first, secondExpr);
+            case ComplexNumber    secondExpr -> processSumComplex(first, secondExpr);
+            default -> processAnySum(first, second);
+        };
+    }
+
+    private Expression processSumNumber(Expression first, NumberExpression secondExpr) {
+        return switch (first) {
+            case NumberExpression firstNum  -> sum(secondExpr, firstNum);
+            case ComplexNumber firstComplex -> new ComplexNumber(firstComplex.value().multiply(secondExpr.value()));
+            default -> processAnySum(first, secondExpr);
+        };
+    }
+
+    private static @NonNull NumberExpression sum(NumberExpression secondExpr, NumberExpression firstNum) {
+        var result = new NumberExpression(firstNum.value() + secondExpr.value());
+        LOGGER.debug("addition {} + {} = {}", firstNum.value(),  secondExpr.value(), result.value());
+        return result;
+    }
+
+    private Expression processSumComplex(Expression first, ComplexNumber secondExpr) {
+        return switch (first) {
+            case NumberExpression firstExpr  -> new ComplexNumber(secondExpr.value().multiply(firstExpr.value()));
+            case ComplexNumber firstComplex ->  new ComplexNumber(firstComplex.value().multiply(secondExpr.value()));
+            default -> processAnySum(first, secondExpr);
+        };
+    }
+
+    private MultiplyExpression processAnySum(Expression firstExpr, Expression secondExpr) {
+        return new MultiplyExpression(firstExpr, secondExpr);
     }
 }

@@ -1,114 +1,62 @@
 package com.txi.math.mathfxdisplay.parser;
 
-import com.txi.math.mathfxdisplay.expr.AddExpression;
-import com.txi.math.mathfxdisplay.expr.ComplexNumber;
-import com.txi.math.mathfxdisplay.expr.DevideExpression;
 import com.txi.math.mathfxdisplay.expr.Expression;
-import com.txi.math.mathfxdisplay.expr.IdentityExpression;
-import com.txi.math.mathfxdisplay.expr.MultiplyExpression;
-import com.txi.math.mathfxdisplay.expr.NumberExpression;
-import com.txi.math.mathfxdisplay.expr.SymbolExpression;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.commons.numbers.complex.Complex;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
-
-import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 public class MathExpressionListener implements MathExprListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MathExpressionListener.class);
 
-
     private final ExpressionBuilder builder;
-
 
     public MathExpressionListener(String identitySymbol) {
         this.builder = new ExpressionBuilder(identitySymbol);
-
     }
 
     public Expression expression() {
-       /* if (stack.size() != 1) {
-            LOGGER.error("stack entries {}", this.stack);
-            throw new IllegalStateException("stack has more than one expression");
-        }
-        return stack.pop();
-
-
-        */
-        return null;
+        return this.builder.expression();
     }
 
     @Override
     public void enterExpr(MathExprParser.ExprContext context) {
-        System.out.println("enterExpr");
-        //LOGGER.info("enterExpr");
-
+        LOGGER.debug("enterExpr");
     }
 
     @Override
     public void exitExpr(MathExprParser.ExprContext ctx) {
-        System.out.println("exitExpr");
-        LOGGER.info("exitExpr");
-        /*
-        if (stack.isEmpty()) {
-            throw new ParseException("empty expression stack");
-        }
-        if (stack.size() == 1) {
-            LOGGER.info("exitExpr: {}", stack.peek() );
-        } else {
-            throw new ParseException("more than one expression");
-        }
-
-         */
+        LOGGER.debug("exitExpr");
+        this.builder.validateEndStack();
     }
 
     @Override
     public void enterSymbol(MathExprParser.SymbolContext context) {
-        System.out.println("enterSymbol");
-        //LOGGER.info("enterSymbol");
+        LOGGER.debug("enterSymbol");
         this.builder.processSymbol(context.ID().getText());
     }
 
-
-
     @Override
     public void exitSymbol(MathExprParser.SymbolContext ctx) {
-        System.out.println("exitSymbol");
-        //LOGGER.info("exitSymbol");
+         LOGGER.info("exitSymbol");
     }
 
     @Override
     public void enterValue(MathExprParser.ValueContext ctx) {
-        System.out.println("enterValue");
-        //LOGGER.info("enterValue");
+        LOGGER.debug("enterValue");
         this.builder.processNumber(ctx.NUMBER());
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
     @Override
     public void exitValue(MathExprParser.ValueContext ctx) {
-        System.out.println("exitValue");
-        //LOGGER.info("exitValue");
+        LOGGER.debug("exitValue");
     }
-
 
     @Override
     public void enterImaginary(MathExprParser.ImaginaryContext ctx) {
-        System.out.println("enterImaginary");
+        LOGGER.debug("enterImaginary");
         this.builder.createImaginary();
     }
 
@@ -124,28 +72,14 @@ public class MathExpressionListener implements MathExprListener {
     }
 
     @Override
-    public void enterSum(MathExprParser.SumContext ctx) {
-        System.out.println("enterSum");
-        //LOGGER.info("enterSum");
+    public void enterSum(MathExprParser.SumContext context) {
+        LOGGER.debug("enterSum");
     }
 
     @Override
     public void exitSum(MathExprParser.SumContext context) {
-        System.out.println("exitSum");
-        LOGGER.info("exitSum");
-        /*
-        if (context.sum() != null && context.sum().size() == 2) {
-            String operator = context.PLUS_MINUS().getText();
-            switch (operator) {
-                case "+" -> processAddExpression();
-                case "-" -> processSubExpression();
-                default -> {
-                    LOGGER.error("Invalid operator: {}", operator);
-                    throw new ParseException("unknown operator: " + operator);
-                }
-            }
-        }
-*/
+        LOGGER.debug("exitSum");
+        this.builder.processSumOrProduct(context.PLUS_OR_MIUS());
     }
 
     @Override
@@ -156,11 +90,8 @@ public class MathExpressionListener implements MathExprListener {
 
     @Override
     public void exitProduct(MathExprParser.ProductContext context) {
-        int size = context.MULTILY_OR_DIV().size();
-        LOGGER.debug("exitProduct size {}", size);
-        if (size > 0) {
-            this.builder.processProduct(context.MULTILY_OR_DIV());
-        }
+        LOGGER.debug("exitProduct");
+        this.builder.processSumOrProduct(context.MULTILY_OR_DIV());
     }
 
     @Override
@@ -251,44 +182,6 @@ public class MathExpressionListener implements MathExprListener {
 
     @Override
     public void visitErrorNode(ErrorNode node) {
-        System.out.println("visitErrorNode");
-        //LOGGER.info("visitErrorNode");
     }
 
-/**
-    private void processAddExpression() {
-        Expression second = this.stack.pop();
-        switch (second) {
-            case NumberExpression secondExpr -> processAdd(secondExpr);
-            case ComplexNumber    secondExpr -> processAdd(secondExpr);
-            default -> processAnyAdd(this.stack.pop(), second);
-        }
-    }
-
-    private void processAdd(NumberExpression secondExpr) {
-        Expression firstExpr = this.stack.pop();
-        switch (firstExpr) {
-            case NumberExpression firstNum  -> this.stack.push(new NumberExpression(firstNum.value() + secondExpr.value()));
-            case ComplexNumber firstComplex -> this.stack.push(new ComplexNumber(firstComplex.value().add(secondExpr.value())));
-            default -> processAnyAdd(firstExpr, secondExpr);
-        }
-    }
-
-    private void processAdd(ComplexNumber secondExpr) {
-        Expression firstExpr = this.stack.pop();
-        switch (firstExpr) {
-            case NumberExpression firstNum  -> this.stack.push(new ComplexNumber(secondExpr.value().add(firstNum.value())));
-            case ComplexNumber firstComplex -> this.stack.push(new ComplexNumber(firstComplex.value().add(secondExpr.value())));
-            default -> processAnyAdd(firstExpr, secondExpr);
-        }
-    }
-
-    private void processAnyAdd(Expression firstExpr, Expression secondExpr) {
-        this.stack.push(new AddExpression(firstExpr, secondExpr));
-    }
-
-    private void processSubExpression() {
-        System.out.println("processing add expression");
-    }
- */
 }

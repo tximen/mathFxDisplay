@@ -6,11 +6,7 @@ package com.txi.math.mathfxdisplay.parser;
 
 expr:   sum  EOF ;
 
-
-// 2. Addition und Subtraktion
-sum
-    :  product ( (PLUS | MINUS) product)*
-    ;
+sum :  product (PLUS_OR_MIUS product)* ;
 
 // 3. Multiplikation und Division
 product
@@ -18,7 +14,7 @@ product
     ;
 
 unary
-    :   ((PLUS | MINUS))* power
+    :   (PLUS_OR_MIUS)* power
     ;
 
 
@@ -61,8 +57,7 @@ braceExp
 // Lexer-Regeln (unverändert)
 NUMBER      :   [0-9]+ ('.' [0-9]+)? ;
 ID          :   [a-zA-Z_][a-zA-Z0-9_]* ;
-PLUS: '+' ;
-MINUS: '-' ;
-MULTILY_OR_DIV: '*' |   '/' ;
+PLUS_OR_MIUS   : '+' | '-' ;
+MULTILY_OR_DIV : '*' |   '/' ;
 WS          :   [ \t\r\n]+ -> skip ;
 COMMENT     :   '//' ~[\r\n]* -> skip ;

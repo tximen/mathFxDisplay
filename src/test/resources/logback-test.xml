@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Konsolen-Appender definieren -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss} %-5level %logger{36}\(%line\) - %msg%n</pattern>
+
+        </encoder>
+    </appender>
+
+    <!-- Globales Log-Level für Tests (z.B. INFO oder DEBUG) -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+
+
+</configuration>

@@ -24,6 +24,6 @@ public class NullStellenViewTest {
 
     @Test
     void open_view(FxRobot robot) {
-        sleepSeconds(10);
+        sleepSeconds(1);
     }
 }

@@ -18,6 +18,7 @@ public class MathExpressionListener implements MathExprListener {
     }
 
     public Expression expression() {
+        this.builder.validateEndStack();
         return this.builder.expression();
     }
 
@@ -29,7 +30,7 @@ public class MathExpressionListener implements MathExprListener {
     @Override
     public void exitExpr(MathExprParser.ExprContext ctx) {
         LOGGER.debug("exitExpr");
-        this.builder.validateEndStack();
+
     }
 
     @Override
@@ -96,14 +97,13 @@ public class MathExpressionListener implements MathExprListener {
 
     @Override
     public void enterUnary(MathExprParser.UnaryContext ctx) {
-        System.out.println("enterUnary");
-        //LOGGER.info("enterUnary");
+        LOGGER.debug("enterUnary");
     }
 
     @Override
-    public void exitUnary(MathExprParser.UnaryContext ctx) {
-        System.out.println("exitUnary");
-        //LOGGER.info("exitUnary");
+    public void exitUnary(MathExprParser.UnaryContext context) {
+        LOGGER.debug("exitUnary");
+        this.builder.processUnary(context.PLUS_OR_MIUS());
     }
 
     @Override
@@ -113,9 +113,10 @@ public class MathExpressionListener implements MathExprListener {
     }
 
     @Override
-    public void exitPower(MathExprParser.PowerContext ctx) {
-        System.out.println("exitPower");
-        //LOGGER.info("exitPower");
+    public void exitPower(MathExprParser.PowerContext context) {
+        if (context.EXP() != null && "^".equals(context.EXP().getText())) {
+            this.builder.processPower();
+        }
     }
 
     @Override
@@ -142,28 +143,13 @@ public class MathExpressionListener implements MathExprListener {
         //LOGGER.info("exitFunctionCall");
     }
 
-    @Override
-    public void enterArgList(MathExprParser.ArgListContext ctx) {
-        System.out.println("enterArgList");
-        //LOGGER.info("enterArgList");
-    }
-
-    @Override
-    public void exitArgList(MathExprParser.ArgListContext ctx) {
-        System.out.println("exitArgList");
-        //LOGGER.info("exitArgList");
-    }
 
     @Override
     public void enterBraceExp(MathExprParser.BraceExpContext ctx) {
-        System.out.println("enterBraceExp");
-        //LOGGER.info("enterBraceExp");
     }
 
     @Override
     public void exitBraceExp(MathExprParser.BraceExpContext ctx) {
-        System.out.println("exitBraceExp");
-        //LOGGER.info("exitBraceExp");
     }
 
 

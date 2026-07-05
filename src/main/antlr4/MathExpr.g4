@@ -19,7 +19,7 @@ unary
 
 
 power
-    :   atom ('^' power)?
+    :   atom (EXP power)?
     ;
 
 atom
@@ -43,21 +43,19 @@ imaginary
    ;
 
 functionCall
-    :   ID '(' argList? ')'
-    ;
-
-argList
-    :   expr (',' expr)*
+    :   FCT_NAME braceExp
     ;
 
 braceExp
     : '(' expr ')'
     ;
 
-// Lexer-Regeln (unverändert)
+// Lexer
 NUMBER      :   [0-9]+ ('.' [0-9]+)? ;
 ID          :   [a-zA-Z_][a-zA-Z0-9_]* ;
 PLUS_OR_MIUS   : '+' | '-' ;
 MULTILY_OR_DIV : '*' |   '/' ;
-WS          :   [ \t\r\n]+ -> skip ;
-COMMENT     :   '//' ~[\r\n]* -> skip ;
+FCT_NAME       : 'sin' | 'cos' | 'exp' | 'ln';
+EXP            : '^';
+WS             :   [ \t\r\n]+ -> skip ;
+COMMENT        :   '//' ~[\r\n]* -> skip ;

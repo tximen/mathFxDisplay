@@ -13,4 +13,9 @@ public record MultiplyExpression(Expression first, Expression second) implements
     public Complex eval(Complex x) {
         return first.eval(x).multiply(second.eval(x));
     }
+
+    @Override
+    public String info() {
+        return "%s * %s".formatted(first.info(), second.info());
+    }
 }

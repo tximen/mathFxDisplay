@@ -46,4 +46,9 @@ public record PowerExpression(Expression first, Expression second) implements Ex
         return first.eval(x).pow(second.eval(x));
     }
 
+
+    @Override
+    public String info() {
+        return getClass().toString();
+    }
 }

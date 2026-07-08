@@ -1,13 +1,18 @@
 package com.txi.math.mathfxdisplay.parser;
 
 import com.txi.math.mathfxdisplay.expr.AddExpression;
+import com.txi.math.mathfxdisplay.expr.BraceExpression;
 import com.txi.math.mathfxdisplay.expr.ComplexNumber;
+import com.txi.math.mathfxdisplay.expr.CosExpression;
 import com.txi.math.mathfxdisplay.expr.DevideExpression;
+import com.txi.math.mathfxdisplay.expr.EEpression;
 import com.txi.math.mathfxdisplay.expr.Expression;
 import com.txi.math.mathfxdisplay.expr.IdentityExpression;
 import com.txi.math.mathfxdisplay.expr.MultiplyExpression;
 import com.txi.math.mathfxdisplay.expr.NumberExpression;
+import com.txi.math.mathfxdisplay.expr.PiExpression;
 import com.txi.math.mathfxdisplay.expr.PowerExpression;
+import com.txi.math.mathfxdisplay.expr.SinExpression;
 import com.txi.math.mathfxdisplay.expr.SubExpression;
 import com.txi.math.mathfxdisplay.expr.SymbolExpression;
 import com.txi.math.mathfxdisplay.expr.UnaryMinusExpression;
@@ -61,8 +66,12 @@ public class ExpressionBuilder {
     }
 
     private Expression createSymbolOrIdentity(String otherSymbol) {
-        if (this.identitySymbol.equals(otherSymbol)) {
-            return new IdentityExpression();
+        if ("e".equals(otherSymbol)) {
+            return new EEpression();
+        } else if ("pi".equals(otherSymbol)) {
+            return new PiExpression();
+        } else if (this.identitySymbol.equals(otherSymbol)) {
+            return new IdentityExpression(this.identitySymbol);
         } else {
             return new SymbolExpression(otherSymbol);
         }
@@ -314,12 +323,51 @@ public class ExpressionBuilder {
         this.stack.push(processPower(first, second));
     }
 
+
+
+
     private Expression processPower(Expression first, Expression second) {
         return processAnyPower(first, second);
-
     }
 
     private Expression processAnyPower(Expression first, Expression second) {
         return new PowerExpression(first, second);
+    }
+
+    public void processBrace() {
+        if (! isNotBrace(this.stack.peek())) {
+            BraceExpression  brace = new BraceExpression(this.stack.pop());
+            LOGGER.info("pushing {}", brace);
+            this.stack.push(brace);
+        }
+    }
+
+    private boolean isNotBrace(Expression expression) {
+        return expression instanceof BraceExpression
+            || expression instanceof ComplexNumber
+            || expression instanceof NumberExpression
+            || expression instanceof IdentityExpression
+            || expression instanceof SymbolExpression;
+    }
+
+    public void processFunctionCall(String functionName) {
+        this.stack.push(createFunctionCall(functionName));
+
+    }
+
+    private Expression createFunctionCall(String functionName) {
+        return switch (functionName) {
+            case "sin" -> new SinExpression(fctArgExpr(this.stack.pop()));
+            case "cos" -> new CosExpression(fctArgExpr(this.stack.pop()));
+            default -> throw new ParseException("unknown function: " + functionName);
+        };
+    }
+
+    private Expression fctArgExpr(Expression expression) {
+        if (expression instanceof BraceExpression(Expression innerExpr)) {
+            return fctArgExpr(innerExpr);
+        } else {
+            return expression;
+        }
     }
 }

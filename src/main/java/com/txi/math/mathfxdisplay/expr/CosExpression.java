@@ -2,21 +2,23 @@ package com.txi.math.mathfxdisplay.expr;
 
 import org.apache.commons.numbers.complex.Complex;
 
-public record UnaryMinusExpression (Expression innerExp ) implements Expression {
+public record CosExpression(Expression innerExp) implements Expression {
 
     @Override
     public double eval(double value) {
-        return - innerExp.eval(value);
+        return Math.cos(innerExp.eval(value));
     }
 
     @Override
     public Complex eval(Complex value) {
-        return innerExp.eval(value).multiply(-1d);
+        Complex evalX = innerExp.eval(value);
+        return evalX.cos();
     }
 
 
     @Override
     public String info() {
-        return getClass().toString();
+        return "cos(%s)".formatted(innerExp.info());
     }
+
 }

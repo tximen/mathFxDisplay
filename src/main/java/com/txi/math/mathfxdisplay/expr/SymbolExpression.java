@@ -13,4 +13,11 @@ public record SymbolExpression(String symbol) implements Expression {
     public Complex eval(Complex x) {
         throw new UnsupportedOperationException("symbol " + symbol + " is not supported");
     }
+
+
+    @Override
+    public String info() {
+        return getClass().toString();
+    }
+
 }

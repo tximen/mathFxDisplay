@@ -36,7 +36,7 @@ public class MathExpressionListener implements MathExprListener {
     @Override
     public void enterSymbol(MathExprParser.SymbolContext context) {
         LOGGER.debug("enterSymbol");
-        this.builder.processSymbol(context.ID().getText());
+        this.builder.processSymbol(context.IDENTIFIER().getText());
     }
 
     @Override
@@ -47,7 +47,7 @@ public class MathExpressionListener implements MathExprListener {
     @Override
     public void enterValue(MathExprParser.ValueContext ctx) {
         LOGGER.debug("enterValue");
-        this.builder.processNumber(ctx.NUMBER());
+        this.builder.processNumber(ctx.Number());
     }
 
     @Override
@@ -68,8 +68,7 @@ public class MathExpressionListener implements MathExprListener {
      */
     @Override
     public void exitImaginary(MathExprParser.ImaginaryContext ctx) {
-        System.out.println("exitImaginary");
-        //LOGGER.info("exitImaginary");
+        LOGGER.debug("exitImaginary");
     }
 
     @Override
@@ -85,8 +84,7 @@ public class MathExpressionListener implements MathExprListener {
 
     @Override
     public void enterProduct(MathExprParser.ProductContext ctx) {
-        System.out.println("enterProduct");
-        //LOGGER.info("enterProduct");
+        LOGGER.debug("enterProduct");
     }
 
     @Override
@@ -102,14 +100,11 @@ public class MathExpressionListener implements MathExprListener {
 
     @Override
     public void exitUnary(MathExprParser.UnaryContext context) {
-        LOGGER.debug("exitUnary");
         this.builder.processUnary(context.PLUS_OR_MIUS());
     }
 
     @Override
     public void enterPower(MathExprParser.PowerContext ctx) {
-        System.out.println("enterPower");
-        //LOGGER.info("enterPower");
     }
 
     @Override
@@ -121,26 +116,28 @@ public class MathExpressionListener implements MathExprListener {
 
     @Override
     public void enterAtom(MathExprParser.AtomContext ctx) {
-        System.out.println("enterAtom");
-        //LOGGER.info("enterAtom");
+        LOGGER.debug("enterAtom");
     }
 
     @Override
-    public void exitAtom(MathExprParser.AtomContext ctx) {
-        System.out.println("exitAtom");
-        //LOGGER.info("exitAtom");
+    public void exitAtom(MathExprParser.AtomContext context) {
+
+        LOGGER.debug("exitAtom");
     }
 
-    @Override
-    public void enterFunctionCall(MathExprParser.FunctionCallContext ctx) {
-        System.out.println("enterFunctionCall");
-        //LOGGER.info("enterFunctionCall");
-    }
 
-    @Override
-    public void exitFunctionCall(MathExprParser.FunctionCallContext ctx) {
-        System.out.println("exitFunctionCall");
-        //LOGGER.info("exitFunctionCall");
+
+    public void enterFctCall(MathExprParser.FctCallContext context) {
+        LOGGER.debug("enterFctCall");
+
+    }
+    /**
+     * Exit a parse tree produced by {@link MathExprParser#fctCall}.
+     * @param context the parse tree
+     */
+    public void exitFctCall(MathExprParser.FctCallContext context) {
+        LOGGER.debug("exitFctCall");
+        this.builder.processFunctionCall(context.getChild(0).getText());
     }
 
 
@@ -149,9 +146,10 @@ public class MathExpressionListener implements MathExprListener {
     }
 
     @Override
-    public void exitBraceExp(MathExprParser.BraceExpContext ctx) {
-    }
+    public void exitBraceExp(MathExprParser.BraceExpContext context) {
+        this.builder.processBrace();
 
+    }
 
 
     @Override
@@ -169,5 +167,6 @@ public class MathExpressionListener implements MathExprListener {
     @Override
     public void visitErrorNode(ErrorNode node) {
     }
+
 
 }

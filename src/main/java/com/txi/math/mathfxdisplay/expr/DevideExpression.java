@@ -13,4 +13,10 @@ public record DevideExpression(Expression first, Expression second) implements E
     public Complex eval(Complex x) {
         return first.eval(x).divide(second.eval(x));
     }
+
+
+    @Override
+    public String info() {
+        return "%s/%s".formatted(first.info(), second.info());
+    }
 }

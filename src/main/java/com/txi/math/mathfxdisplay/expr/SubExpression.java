@@ -13,4 +13,10 @@ public record SubExpression(Expression first, Expression second) implements Expr
     public Complex eval(Complex x) {
         return first.eval(x).subtract(second.eval(x));
     }
+
+
+    @Override
+    public String info() {
+        return getClass().toString();
+    }
 }

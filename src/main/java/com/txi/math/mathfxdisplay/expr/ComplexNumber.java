@@ -17,4 +17,10 @@ public record ComplexNumber(Complex value) implements Expression {
     public Complex eval(Complex x) {
         return this.value;
     }
+
+
+    @Override
+    public String info() {
+        return getClass().toString();
+    }
 }

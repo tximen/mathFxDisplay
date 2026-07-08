@@ -7,4 +7,6 @@ public interface Expression {
     double eval(double value);
 
     Complex eval(Complex value);
+
+    String info();
 }

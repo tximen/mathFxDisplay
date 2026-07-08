@@ -17,24 +17,31 @@ unary
     :   (PLUS_OR_MIUS)* power
     ;
 
-
 power
-    :   atom ('^' power)?
+    :   atom (EXP power)?
     ;
 
 atom
-    : value
-    | symbol
-    | functionCall
+    : fctCall
+    | value
     | braceExp
+    | symbol
     ;
 
-symbol : ID ;
+fctCall
+   : SIN braceExp
+   | COS braceExp
+   | SQRT braceExp
+   | EXPO braceExp
+   ;
+
+symbol : IDENTIFIER ;
 
 value
-   : NUMBER
-   | NUMBER imaginary
+   : Number
+   | Number imaginary
    | imaginary
+
    ;
 
 imaginary
@@ -42,22 +49,34 @@ imaginary
    | 'j'
    ;
 
-functionCall
-    :   ID '(' argList? ')'
-    ;
 
-argList
-    :   expr (',' expr)*
-    ;
 
 braceExp
     : '(' expr ')'
     ;
 
-// Lexer-Regeln (unverändert)
-NUMBER      :   [0-9]+ ('.' [0-9]+)? ;
-ID          :   [a-zA-Z_][a-zA-Z0-9_]* ;
+SIN : 'sin';
+COS : 'cos';
+SQRT: 'sqrt';
+EXPO : 'exp';
+
+
+IDENTIFIER: Letter LetterOrDigit*;
+
+fragment LetterOrDigit: Letter | [0-9];
+
+fragment Letter:
+    [a-zA-Z$_]                        // these are the "java letters" below 0x7F
+    | ~[\u0000-\u007F\uD800-\uDBFF]   // covers all characters above 0x7F which are not a surrogate
+    | [\uD800-\uDBFF] [\uDC00-\uDFFF] // covers UTF-16 surrogate pairs encodings for U+10000 to U+10FFFF
+;
+
+fragment Digits: [0-9] ([0-9_]* [0-9])?;
+
+// Lexer
+Number      :   Digits ('.' Digits)? ;
 PLUS_OR_MIUS   : '+' | '-' ;
 MULTILY_OR_DIV : '*' |   '/' ;
-WS          :   [ \t\r\n]+ -> skip ;
-COMMENT     :   '//' ~[\r\n]* -> skip ;
+EXP            : '^';
+WS             : [ \t\r\n]+ -> skip ;
+COMMENT        : '//' ~[\r\n]* -> skip ;

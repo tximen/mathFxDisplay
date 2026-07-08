@@ -2,24 +2,20 @@ package com.txi.math.mathfxdisplay.expr;
 
 import org.apache.commons.numbers.complex.Complex;
 
-public record IdentityExpression(String identity) implements Expression {
+public class EEpression implements Expression {
 
     @Override
     public double eval(double x) {
-        return x;
+        return Math.E;
     }
 
     @Override
     public Complex eval(Complex x) {
-        return x;
-    }
-
-    public String toString() {
-        return "IdentityExpression[]";
+        return Complex.ofCartesian(Math.E, 0d);
     }
 
     @Override
     public String info() {
-        return identity;
+        return "e";
     }
 }

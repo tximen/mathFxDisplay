@@ -17,6 +17,6 @@ public record SubExpression(Expression first, Expression second) implements Expr
 
     @Override
     public String info() {
-        return getClass().toString();
+        return "%s - %s".formatted(first.info(), second.info());
     }
 }

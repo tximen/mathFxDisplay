@@ -49,6 +49,6 @@ public record PowerExpression(Expression first, Expression second) implements Ex
 
     @Override
     public String info() {
-        return getClass().toString();
+        return "%s^%s".formatted(first.info(), second.info());
     }
 }

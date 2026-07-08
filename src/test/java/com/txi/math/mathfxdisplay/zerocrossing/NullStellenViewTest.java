@@ -3,6 +3,7 @@ package com.txi.math.mathfxdisplay.zerocrossing;
 import com.jfx4test.framework.api.FxRobot;
 import com.jfx4test.framework.junit.ApplicationTest;
 import com.jfx4test.framework.junit.FxmlController;
+import com.txi.math.mathfxdisplay.executor.TaskExecutor;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -15,7 +16,7 @@ public class NullStellenViewTest {
 
     @FxmlController
     public NullStellenView nullStellenView() {
-        return new NullStellenView(nullStellenModel());
+        return new NullStellenView(nullStellenModel(), new TaskExecutor());
     }
 
     private NullStellenModel nullStellenModel() {

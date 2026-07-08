@@ -17,7 +17,6 @@ unary
     :   (PLUS_OR_MIUS)* power
     ;
 
-
 power
     :   atom (EXP power)?
     ;
